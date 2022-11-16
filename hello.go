@@ -91,7 +91,9 @@ func testeStatus(sites []string) {
 
 func lerTXT() ([]string, error) {
 	fmt.Println("Checando arquivos...")
-	var sites []string
+	// var sites []string
+	// var sites = make([]string,0)
+	var sites = []string{}
 	arquivos, error := os.Open(ARQUIVO_TXT)
 	if error != nil {
 		fmt.Println("Erro de leitura no arquivo TXT", error)
@@ -110,4 +112,8 @@ func lerTXT() ([]string, error) {
 	fmt.Println("Arquivos checados...")
 	arquivos.Close()
 	return sites, error
+}
+
+func registraLog(site bool, status int) {
+
 }
