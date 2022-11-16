@@ -9,8 +9,9 @@ import (
 	"strings"
 )
 
+const ARQUIVO_TXT = "sites1.txt"
+
 func main() {
-	lerTXT()
 	welcome()
 	menu()
 	for {
@@ -41,7 +42,7 @@ func comando() int {
 	case 3:
 		sairApp()
 	default:
-		fmt.Println("Comando desconhecido")
+		fmt.Println("Comando desconhecido - Fechando App")
 		os.Exit(0)
 	}
 
@@ -51,12 +52,17 @@ func comando() int {
 
 func monitoramento() {
 	fmt.Println("Iniciando monitoramento...")
-	sites := monitorados()
+	sites, error := monitorados()
+	if error != nil {
+
+		return
+	}
 	testeStatus(sites)
 }
 
 func exibirLogs() {
 	fmt.Println("Exibindo logs")
+	menu()
 }
 
 func sairApp() {
@@ -64,9 +70,9 @@ func sairApp() {
 	os.Exit(0)
 }
 
-func monitorados() []string {
-	sites := lerTXT()
-	return sites
+func monitorados() ([]string, error) {
+	sites, error := lerTXT()
+	return sites, error
 }
 
 func testeStatus(sites []string) {
@@ -79,12 +85,17 @@ func testeStatus(sites []string) {
 			fmt.Println("Site:", site, "carregado com sucesso!", response.StatusCode)
 		}
 	}
+	menu()
 }
 
-func lerTXT() []string {
+func lerTXT() ([]string, error) {
+	fmt.Println("Checando arquivos...")
 	var sites []string
-	arquivos, _ := os.Open("sites.txt")
-
+	arquivos, error := os.Open(ARQUIVO_TXT)
+	if error != nil {
+		fmt.Println("Erro de leitura no arquivo TXT", error)
+		return sites, error
+	}
 	leitor := bufio.NewReader(arquivos)
 
 	for {
@@ -95,6 +106,7 @@ func lerTXT() []string {
 			break
 		}
 	}
+	fmt.Println("Arquivos checados...")
 	arquivos.Close()
-	return sites
+	return sites, error
 }
