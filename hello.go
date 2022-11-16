@@ -3,8 +3,10 @@ package main
 import (
 	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
+	"strings"
 )
 
 func main() {
@@ -12,7 +14,7 @@ func main() {
 	welcome()
 	menu()
 	for {
-		decisao(comando())
+		comando()
 	}
 }
 
@@ -47,10 +49,6 @@ func comando() int {
 
 }
 
-func decisao(comando int) {
-	println("Comando", comando)
-}
-
 func monitoramento() {
 	fmt.Println("Iniciando monitoramento...")
 	sites := monitorados()
@@ -67,17 +65,14 @@ func sairApp() {
 }
 
 func monitorados() []string {
-	sites := []string{
-		"http://random-status-code.herokuapp.com/",
-		"https://app.fluigidentity.net/ui/login",
-	}
-
+	sites := lerTXT()
 	return sites
 }
 
 func testeStatus(sites []string) {
 	for _, site := range sites {
 		response, error := http.Get(site)
+
 		if response.StatusCode > 400 || error != nil {
 			fmt.Println("Site:", site, "Falha carregamento:", error)
 		} else {
@@ -89,16 +84,21 @@ func testeStatus(sites []string) {
 func lerTXT() []string {
 	var sites []string
 	arquivos, err := os.Open("sites.txt")
-	// arquivos, err := ioutil.ReadFile("sites.txt")
+
 	if err != nil {
 		fmt.Println("Ocorreu um erro:", err)
 	}
-	linha, err := bufio.NewReader(arquivos).ReadString('\n')
-	if err != nil {
-		fmt.Println("Erro bufio:", err)
+
+	leitor := bufio.NewReader(arquivos)
+
+	for {
+		linha, err := leitor.ReadString('\n')
+		linha = strings.TrimSpace(linha)
+		sites = append(sites, linha)
+		if err == io.EOF {
+			break
+		}
 	}
-	fmt.Println("linha:", linha)
-	// fmt.Println(string(arquivos))
 
 	return sites
 }
