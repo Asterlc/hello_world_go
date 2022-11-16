@@ -83,11 +83,7 @@ func testeStatus(sites []string) {
 
 func lerTXT() []string {
 	var sites []string
-	arquivos, err := os.Open("sites.txt")
-
-	if err != nil {
-		fmt.Println("Ocorreu um erro:", err)
-	}
+	arquivos, _ := os.Open("sites.txt")
 
 	leitor := bufio.NewReader(arquivos)
 
@@ -99,6 +95,6 @@ func lerTXT() []string {
 			break
 		}
 	}
-
+	arquivos.Close()
 	return sites
 }
