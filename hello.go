@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-const ARQUIVO_TXT = "sites1.txt"
+const ARQUIVO_TXT = "sites.txt"
 
 func main() {
 	welcome()
@@ -85,6 +85,7 @@ func testeStatus(sites []string) {
 			fmt.Println("Site:", site, "carregado com sucesso!", response.StatusCode)
 		}
 	}
+	fmt.Println()
 	menu()
 }
 
