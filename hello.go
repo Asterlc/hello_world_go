@@ -86,8 +86,8 @@ func testeStatus(sites []string) {
 			fmt.Println("Site:", site, "Falha carregamento:", error)
 		} else {
 			fmt.Println("Site:", site, "carregado com sucesso!", response.StatusCode)
-			registraLog(site, response.StatusCode)
 		}
+		registraLog(site, response.StatusCode)
 	}
 	fmt.Println()
 	menu()
@@ -128,7 +128,7 @@ func registraLog(site string, status int) {
 	} else {
 		formatStatus := strconv.Itoa(status)
 		formattedDate := strconv.Itoa(int(time.Now().UnixNano() / unixHelper))
-		file.WriteString("UnixTime:" + " " + formattedDate + " " + site + " " + " " + "status" + " " + formatStatus + "\n")
+		file.WriteString(formattedDate + " - " + site + " - " + "status" + " - " + formatStatus + "\n")
 		file.Close()
 	}
 }
