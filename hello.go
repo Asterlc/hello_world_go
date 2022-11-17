@@ -124,12 +124,11 @@ func registraLog(site string, status int) {
 
 	if err != nil {
 		fmt.Println("Erro para registrar log", err)
+		file.Close()
 	} else {
-		fmt.Println("Registrando log:", site)
-		date := strconv.Itoa(int(time.Now().UTC().Unix()))
-		fmt.Println(date)
 		formatStatus := strconv.Itoa(status)
-		file.WriteString("UnixTime:"date + " " + site + " " + " " + "status" + " " + formatStatus + "\n")
+		formattedDate := strconv.Itoa(int(time.Now().UnixNano() / unixHelper))
+		file.WriteString("UnixTime:" + " " + formattedDate + " " + site + " " + " " + "status" + " " + formatStatus + "\n")
 		file.Close()
 	}
 }
