@@ -8,6 +8,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 )
 
 const ARQUIVO_TXT = "sites.txt"
@@ -124,7 +125,10 @@ func registraLog(site string, status int) {
 		fmt.Println("Erro para registrar log", err)
 	} else {
 		fmt.Println("Registrando log:", site)
+		date := time.Now().UTC().String()
+		fmt.Println(date)
 		formatStatus := strconv.Itoa(status)
-		file.WriteString(site + " online with status " + formatStatus + "\n")
+		file.WriteString(date + " " + site + " " + " " + "status" + " " + formatStatus + "\n")
+		file.Close()
 	}
 }
