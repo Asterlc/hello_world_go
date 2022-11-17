@@ -6,6 +6,7 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -83,6 +84,7 @@ func testeStatus(sites []string) {
 			fmt.Println("Site:", site, "Falha carregamento:", error)
 		} else {
 			fmt.Println("Site:", site, "carregado com sucesso!", response.StatusCode)
+			registraLog(site, response.StatusCode)
 		}
 	}
 	fmt.Println()
@@ -92,8 +94,9 @@ func testeStatus(sites []string) {
 func lerTXT() ([]string, error) {
 	fmt.Println("Checando arquivos...")
 	// var sites []string
-	// var sites = make([]string,0)
-	var sites = []string{}
+	var sites = make([]string, 0)
+	// var sites = []string{}
+
 	arquivos, error := os.Open(ARQUIVO_TXT)
 	if error != nil {
 		fmt.Println("Erro de leitura no arquivo TXT", error)
@@ -114,6 +117,14 @@ func lerTXT() ([]string, error) {
 	return sites, error
 }
 
-func registraLog(site bool, status int) {
+func registraLog(site string, status int) {
+	file, err := os.OpenFile("healthlog.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 
+	if err != nil {
+		fmt.Println("Erro para registrar log", err)
+	} else {
+		fmt.Println("Registrando log:", site)
+		formatStatus := strconv.Itoa(status)
+		file.WriteString(site + " online with status " + formatStatus + "\n")
+	}
 }
