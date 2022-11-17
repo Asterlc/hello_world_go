@@ -12,6 +12,7 @@ import (
 )
 
 const ARQUIVO_TXT = "sites.txt"
+const unixHelper = 1000000
 
 func main() {
 	welcome()
@@ -125,10 +126,10 @@ func registraLog(site string, status int) {
 		fmt.Println("Erro para registrar log", err)
 	} else {
 		fmt.Println("Registrando log:", site)
-		date := time.Now().UTC().String()
+		date := strconv.Itoa(int(time.Now().UTC().Unix()))
 		fmt.Println(date)
 		formatStatus := strconv.Itoa(status)
-		file.WriteString(date + " " + site + " " + " " + "status" + " " + formatStatus + "\n")
+		file.WriteString("UnixTime:"date + " " + site + " " + " " + "status" + " " + formatStatus + "\n")
 		file.Close()
 	}
 }
