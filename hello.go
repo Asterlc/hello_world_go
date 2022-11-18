@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"strconv"
@@ -11,8 +12,10 @@ import (
 	"time"
 )
 
-const ARQUIVO_TXT = "sites.txt"
-const unixHelper = 1000000
+const SITES_TXT = "sites.txt"
+const LOG_TXT = "log.txt"
+
+// const UNIX_HELPER = 1000000 formatçaão em unix time
 
 func main() {
 	welcome()
@@ -57,7 +60,7 @@ func monitoramento() {
 	fmt.Println("Iniciando monitoramento...")
 	sites, error := monitorados()
 	if error != nil {
-
+		fmt.Println(error)
 		return
 	}
 	testeStatus(sites)
@@ -65,6 +68,12 @@ func monitoramento() {
 
 func exibirLogs() {
 	fmt.Println("Exibindo logs")
+	file, err := ioutil.ReadFile(LOG_TXT)
+	if err != nil {
+		fmt.Println("Error:", err)
+	} else {
+		fmt.Println(string(file))
+	}
 	menu()
 }
 
@@ -99,36 +108,38 @@ func lerTXT() ([]string, error) {
 	var sites = make([]string, 0)
 	// var sites = []string{}
 
-	arquivos, error := os.Open(ARQUIVO_TXT)
+	files, error := os.Open(SITES_TXT)
 	if error != nil {
 		fmt.Println("Erro de leitura no arquivo TXT", error)
 		return sites, error
 	}
-	leitor := bufio.NewReader(arquivos)
+	leitor := bufio.NewReader(files)
 
 	for {
-		linha, err := leitor.ReadString('\n')
-		linha = strings.TrimSpace(linha)
-		sites = append(sites, linha)
+		line, err := leitor.ReadString('\n')
+		line = strings.TrimSpace(line)
+		sites = append(sites, line)
 		if err == io.EOF {
 			break
 		}
 	}
 	fmt.Println("Arquivos checados...")
-	arquivos.Close()
+	files.Close()
 	return sites, error
 }
 
 func registraLog(site string, status int) {
-	file, err := os.OpenFile("healthlog.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	file, err := os.OpenFile(LOG_TXT, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
 
 	if err != nil {
 		fmt.Println("Erro para registrar log", err)
 		file.Close()
 	} else {
 		formatStatus := strconv.Itoa(status)
-		formattedDate := strconv.Itoa(int(time.Now().UnixNano() / unixHelper))
-		file.WriteString(formattedDate + " - " + site + " - " + "status" + " - " + formatStatus + "\n")
+		// dateFormat := strconv.Itoa(int(time.Now().UnixNano() / UNIX_HELPER))
+		dateFormat := time.Now().Format("02/01/2006 15:04:05")
+
+		file.WriteString(dateFormat + " - " + site + " - " + "status" + " - " + formatStatus + "\n")
 		file.Close()
 	}
 }
